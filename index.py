@@ -23,7 +23,7 @@ with monitoreo.connect() as connection2:
     datosDf = pd.DataFrame(datos)
     datosDf.columns = [colName.upper() for colName in queryResult.keys()]
     
-    agd_muestreos_parametros = pd.DataFrame(columns = ['ID_MUESTREO','ID_PARAMETRO','ID_METODOLOGIA','ID_UNIDAD_MEDIDA','VALOR','ID_MUESTREOTEX'])
+    # agd_muestreos_parametros = pd.DataFrame(columns = ['ID_MUESTREO','ID_PARAMETRO','ID_METODOLOGIA','ID_UNIDAD_MEDIDA','VALOR','ID_MUESTREOTEX'])
     
     for _, df_muestreo in datosDf.groupby(['ID_MUESTREO']):
         
@@ -32,13 +32,13 @@ with monitoreo.connect() as connection2:
         
     #     proyectoMuestreos = pd.DataFrame({'ID_MUESTREO': df_muestreo['ID_MUESTREO'],'ID_PARAMETRO': 127,'ID_METODOLOGIA': 859,'ID_UNIDAD_MEDIDA': 100,'VALOR': df_muestreo['ID_PROYECTO'],
     #                                     'ID_MUESTREOTEX': df_muestreo['ID_MUESTREO']})
+    
+        insertEntidad = f"""INSERT INTO AGD_MUESTREOS_PARAMETROS ('ID_MUESTREO','ID_PARAMETRO','ID_METODOLOGIA','ID_UNIDAD_MEDIDA','VALOR') 
+                            VALUES ({df_muestreo['ID_MUESTREO'].values[0]},{828},{859},{100},'{'ANH'}'"""
         
-        insertEntidad = f"""INSERT INTO AGD_MUESTREOS_PARAMETROS ('ID_MUESTREO','ID_PARAMETRO','ID_METODOLOGIA','ID_UNIDAD_MEDIDA','VALOR','ID_MUESTREOTEX') 
-                            VALUES ({df_muestreo['ID_MUESTREO'].values[0]},{828},{859},{100},'{str(df_muestreo['ID_ENTIDAD'].values[0])}','{str(df_muestreo['ID_MUESTREO'].values[0])}')"""
-        
-        insertProyecto = f"""INSERT INTO AGD_MUESTREOS_PARAMETROS ('ID_MUESTREO','ID_PARAMETRO','ID_METODOLOGIA','ID_UNIDAD_MEDIDA','VALOR','ID_MUESTREOTEX') 
-                            VALUES ({df_muestreo['ID_MUESTREO']},{127},{859},{100},{df_muestreo['ID_PROYECTO']},{df_muestreo['ID_MUESTREO']})"""
-                            
+        insertProyecto = f"""INSERT INTO AGD_MUESTREOS_PARAMETROS ('ID_MUESTREO','ID_PARAMETRO','ID_METODOLOGIA','ID_UNIDAD_MEDIDA','VALOR') 
+                            VALUES ({df_muestreo['ID_MUESTREO']},{127},{859},{100},{df_muestreo['ID_PROYECTO']})"""
+
         print(insertEntidad)
         print(insertProyecto)
         # agd_muestreos_parametros = agd_muestreos_parametros.append([entidadMuestreos, proyectoMuestreos])
