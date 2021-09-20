@@ -18,7 +18,7 @@ Base = declarative_base
 
 with monitoreo.connect() as connection2:
 
-    query2 = "SELECT ID_MUESTREO, ID_CUALIDAD, VALOR_NUM  FROM VM_DATOS_MONITOREO WHERE ID_PROYECTO = 2148 AND ID_MUESTREO = 3226201409221457271 "
+    query2 = "SELECT ID_MUESTREO, ID_CUALIDAD, VALOR_NUM  FROM VM_DATOS_MONITOREO WHERE ID_PROYECTO = 2148 AND COD_VARIABLE = 'SAL' AND ID_MUESTREO = 3226201409221457271"
     query2Result = connection2.execute(query2)
     datos2 = query2Result.fetchall()
     datos2Df = pd.DataFrame(datos2)
@@ -32,44 +32,15 @@ with monitoreo.connect() as connection2:
     for _, df_muestra in datos2Df.groupby('ID_MUESTRA'):
         
         insertSalinidad = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR, QUALITY_FLAG, PRESICION)
-                        VALUES({89},{859},{19},{df_muestra['ID_MUESTRA'].values[0]}, {622}, {df_muestra['VALOR_NUM'].values[1]},{2}, {'null'})"""
-        
-        insertPresion = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR, QUALITY_FLAG, PRESICION)
-                        VALUES({438},{859},{38},{df_muestra['ID_MUESTRA'].values[0]}, {769}, {df_muestra['VALOR_NUM'].values[1]}, {2}, {'null'})"""
-                        
-        insertConductividad = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR, QUALITY_FLAG, PRESICION)
-                        VALUES({12},{859},{7},{df_muestra['ID_MUESTRA'].values[0]}, {608}, {df_muestra['VALOR_NUM'].values[1]}, {2}, {'null'})"""
-        
-        insertTemperatura = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR, QUALITY_FLAG, PRESICION)
-                        VALUES({151},{859},{5},{df_muestra['ID_MUESTRA'].values[0]}, {769}, {df_muestra['VALOR_NUM'].values[1]}, {2}, {'null'})"""
-                        
-        insertOD = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR, QUALITY_FLAG, PRESICION)
-                        VALUES({52},{859},{26},{df_muestra['ID_MUESTRA'].values[0]}, {619}, {df_muestra['VALOR_NUM'].values[1]}, {2}, {'null'})"""
-                        
-        insertCLA = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR, QUALITY_FLAG, PRESICION)
-                        VALUES({8},{859},{13},{df_muestra['ID_MUESTRA'].values[0]}, {609}, {df_muestra['VALOR_NUM'].values[1]}, {2}, {'null'})"""
-                        
-        insertPh = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR, QUALITY_FLAG, PRESICION)
-                        VALUES({56},{859},{0},{df_muestra['ID_MUESTRA'].values[0]}, {620}, {df_muestra['VALOR_NUM'].values[1]}, {2}, {'null'})"""
-                        
-        insertSO = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR, QUALITY_FLAG, PRESICION)
-                        VALUES({94},{859},{4},{df_muestra['ID_MUESTRA'].values[0]}, {618}, {df_muestra['VALOR_NUM'].values[1]}, {2}, {'null'})"""
-        
+                        VALUES({89},{859},{103},{df_muestra['ID_MUESTRA'].values[0]}, {622}, {df_muestra['VALOR_NUM'].values[0]},{2}, {'null'})"""
         
         muestras.append(insertSalinidad)
-        muestras.append(insertPresion)
-        muestras.append(insertConductividad)
-        muestras.append(insertTemperatura)
-        muestras.append(insertOD)
-        muestras.append(insertCLA)
-        muestras.append(insertPh)
-        muestras.append(insertSO)
         
     muestras = pd.DataFrame(data=muestras, columns = ['SQL'])                  
     print(muestras)
     # print(pd.DataFrame(datos2Df['ID_MUESTRA']))
     # pd.DataFrame(datos2Df['ID_MUESTRA']).to_csv('muestras.csv', index=False)
-    muestras.to_csv('muestras.csv', index=False)
+    muestras.to_csv('muestras_variables.csv', index=False)
 
 # with engine.connect() as connection:
 

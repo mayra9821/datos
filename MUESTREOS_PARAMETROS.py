@@ -24,7 +24,7 @@ with monitoreo.connect() as connection2:
     datosDf = pd.DataFrame(datos)
     datosDf.columns = [colName.upper() for colName in queryResult.keys()]
 
-    agd_muestreos_parametros = pd.DataFrame(columns = ['ID_MUESTREO','ID_PARAMETRO','ID_METODOLOGIA','ID_UNIDAD_MEDIDA','VALOR'])
+    # agd_muestreos_parametros = pd.DataFrame(columns = ['ID_MUESTREO','ID_PARAMETRO','ID_METODOLOGIA','ID_UNIDAD_MEDIDA','VALOR'])
     inserts = list()
     
     for _, df_muestreo in datosDf.groupby(['ID_MUESTREO']):

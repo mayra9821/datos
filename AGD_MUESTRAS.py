@@ -17,7 +17,9 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base
 
 with monitoreo.connect() as connection2:
-    query2 = "SELECT ID_MUESTREO, ID_CUALIDAD, MUESTREOSOBSERVACIONES, REPLICA FROM VM_DATOS_MONITOREO WHERE ID_PROYECTO = 2148 "
+    query2 = """SELECT ID_MUESTREO, ID_CUALIDAD, MUESTREOSOBSERVACIONES, REPLICA FROM VM_DATOS_MONITOREO WHERE ID_PROYECTO = 2148 
+                AND VARIABLE IN ('Temperatura del agua','Oxigeno Disuelto','Presión','Porcentaje de Saturación de Oxígeno','Conductividad','pH','Salinidad','Clorofila a')"""
+
     query2Result = connection2.execute(query2)
     datos2 = query2Result.fetchall()
     datos2Df = pd.DataFrame(datos2)
@@ -36,12 +38,13 @@ with monitoreo.connect() as connection2:
         muestras.append(insertMuestra)
     muestras = pd.DataFrame(data=muestras, columns = ['SQL'])                  
     # print(muestras)
+
     # print(pd.DataFrame(datos2Df['ID_MUESTRA']))
     # pd.DataFrame(datos2Df['ID_MUESTRA']).to_csv('muestras.csv', index=False)
-    muestras.to_csv('muestras.csv', index=False)
+    # muestras.to_csv('muestras.csv', index=False)
 
-# with engine.connect() as connection:
+with engine.connect() as connection:
 
-#     for index, row in insertMuestra.iterrows():
-#         connection.execute(row['SQL'])
-#         print(row[])
+    for index, row in muestras.iterrows():
+        connection.execute(row['SQL'])
+        # print(row['SQL'])
