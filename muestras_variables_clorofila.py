@@ -18,7 +18,7 @@ Base = declarative_base
 
 with monitoreo.connect() as connection2:
 
-    query2 = "SELECT ID_MUESTREO, ID_CUALIDAD, VALOR_NUM  FROM VM_DATOS_MONITOREO WHERE ID_PROYECTO = 2148 AND COD_VARIABLE = 'SAL' AND ID_MUESTREO = 3226201409221457271"
+    query2 = "SELECT ID_MUESTREO, ID_CUALIDAD, VALOR_NUM  FROM VM_DATOS_MONITOREO WHERE ID_PROYECTO = 2148 AND COD_VARIABLE = 'CLA' AND ID_MUESTREO = 3226201409221457271"
     query2Result = connection2.execute(query2)
     datos2 = query2Result.fetchall()
     datos2Df = pd.DataFrame(datos2)
@@ -31,10 +31,10 @@ with monitoreo.connect() as connection2:
     # print(datos2Df['ID_MUESTRA'].unique().size)
     for _, df_muestra in datos2Df.groupby('ID_MUESTRA'):
         
-        insertSalinidad = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR, QUALITY_FLAG, PRESICION)
-                        VALUES({89},{859},{103},{df_muestra['ID_MUESTRA'].values[0]}, {622}, {df_muestra['VALOR_NUM'].values[0]},{2}, {'null'})"""
+        insertClorofila = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR, QUALITY_FLAG, PRESICION)
+                        VALUES({8},{859},{13},{df_muestra['ID_MUESTRA'].values[0]}, {608}, {df_muestra['VALOR_NUM'].values[0]},{2}, {'null'})"""
         
-        muestras.append(insertSalinidad)
+        muestras.append(insertClorofila)
         
     muestras = pd.DataFrame(data=muestras, columns = ['SQL'])                  
     print(muestras)

@@ -47,37 +47,3 @@ with monitoreo.connect() as connection2:
     # for index, row in insertMuestra.iterrows():
     #     connection.execute(row['SQL'])
 #         print(row[])
-
-    # (?=\s).*
-    # compression_opts = dict(method='zip', archive_name='out.csv') 
-    # inserts.to_csv('out.zip', compression = compression_opts)
-
-
-        
-    
-
-    # for muestreo in datosDf['ID_MUESTREO'].unique():
-    #     filterData = datosDf[datos['ID_MUESTREO'] == muestreo]
-    #     print(filterData)        
-    
-        
-    # print(list(pd.unique(datosDf['ID_MUESTREO'])))
-
-# with engine.connect() as connection:
-
-    # for index, row in inserts.iterrows():
-    #     connection.execute(row['SQL'])
-    
-#     for _, row in agd_muestreos_parametros.reset_index().iterrows():
-        
-        
-#         print(row)
-#         metadata_obj = MetaData()
-#         # insert(AGD_MUESTREOS_PARAMETROS).values(ID_MUESTREO = agd_muestreos_parametros[row],)  
-        
-    # query = "SELECT * FROM AGM_PARAMETROS"
-    # queryResult = connection.execute(query)
-    # datos = queryResult.fetchall()
-    # datosDf = pd.DataFrame(datos)
-    # datosDf.columns = [colName.upper() for colName in queryResult.keys()]
-    # print(datosDf['ID_PARAMETRO'])

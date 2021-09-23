@@ -31,10 +31,10 @@ with monitoreo.connect() as connection2:
     # print(datos2Df['ID_MUESTRA'].unique().size)
     for _, df_muestra in datos2Df.groupby('ID_MUESTRA'):
         
-        insertSalinidad = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR, QUALITY_FLAG, PRESICION)
-                        VALUES({89},{859},{103},{df_muestra['ID_MUESTRA'].values[0]}, {622}, {df_muestra['VALOR_NUM'].values[0]},{2}, {'null'})"""
+        insertOxigeno_disuelto = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR, QUALITY_FLAG, PRESICION)
+                        VALUES({52},{859},{26},{df_muestra['ID_MUESTRA'].values[0]}, {619}, {df_muestra['VALOR_NUM'].values[0]},{2}, {'null'})"""
         
-        muestras.append(insertSalinidad)
+        muestras.append(insertOxigeno_disuelto)
         
     muestras = pd.DataFrame(data=muestras, columns = ['SQL'])                  
     print(muestras)
