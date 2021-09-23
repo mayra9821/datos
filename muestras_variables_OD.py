@@ -40,7 +40,7 @@ with monitoreo.connect() as connection2:
     print(muestras)
     # print(pd.DataFrame(datos2Df['ID_MUESTRA']))
     # pd.DataFrame(datos2Df['ID_MUESTRA']).to_csv('muestras.csv', index=False)
-    muestras.to_csv('muestras_variables.csv', index=False)
+    muestras.to_csv('muestras_variables_OD.csv', index=False)
 
 # with engine.connect() as connection:
 
