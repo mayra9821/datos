@@ -18,7 +18,7 @@ Base = declarative_base
 
 with monitoreo.connect() as connection2:
 
-    query2 = "SELECT ID_MUESTREO, ID_CUALIDAD, VALOR_NUM  FROM VM_DATOS_MONITOREO WHERE ID_PROYECTO = 2148 AND COD_VARIABLE = 'SAL' AND ID_MUESTREO = 3226201409221457271"
+    query2 = "SELECT ID_MUESTREO, ID_CUALIDAD, VALOR_NUM  FROM VM_DATOS_MONITOREO WHERE ID_PROYECTO = 2148 AND COD_VARIABLE = 'OD' AND ID_MUESTREO = 3226201409221457271"
     query2Result = connection2.execute(query2)
     datos2 = query2Result.fetchall()
     datos2Df = pd.DataFrame(datos2)

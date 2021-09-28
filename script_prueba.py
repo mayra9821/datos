@@ -6,7 +6,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import session, sessionmaker
 from sqlalchemy.sql.expression import select,insert
 
-
 SQL_ALCHEMY_DATABASE_URL = 'oracle://DATOSDECAMPO:paseos@192.168.3.70:1521/sci'
 SQL_ALCHEMY_MONITOREO_URL = 'oracle://MONITOREOM:mon2007@192.168.3.70:1521/sci'
 
@@ -27,11 +26,20 @@ with engine.connect() as connection:
     unidadesQueryResultado = connection.execute(unidadesQuery)
     unidadesCur = unidadesQueryResultado.fetchall()
     unidadesDf = pd.DataFrame(unidadesCur)
-    unidadesDf.columns = [colName.upper() for colName in unidadesQueryResultado.keys()] 
+    unidadesDf.columns = [colName.upper() for colName in unidadesQueryResultado.keys()]
+    
+    metodosQuery = """SELECT DISTINCT AGM_PARAMETROS.NOMBRE PARAMETRO, AGM_METODOS.ID_METODO FROM AGM_METODOS 
+                        INNER JOIN AGM_METODOSXVARIABLE ON AGM_METODOS.ID_METODO = AGM_METODOSXVARIABLE.ID_METODO 
+                        INNER JOIN AGM_PARAMETROS ON AGM_METODOSXVARIABLE.ID_VARIABLE = AGM_PARAMETROS.ID_PARAMETRO
+                        WHERE AGM_METODOS.ID_METODO IN (619,622,769,621,618,620,608,609)"""
+    metodosQueryResultado = connection.execute(metodosQuery)
+    metodosCur = metodosQueryResultado.fetchall()
+    metodosDf = pd.DataFrame(metodosCur)
+    metodosDf.columns = [colName.upper() for colName in metodosQueryResultado.keys()]
 
 with monitoreo.connect() as connection2:
 
-    query2 = "SELECT ID_MUESTREO, ID_CUALIDAD, VARIABLE, UNIDAD, VALOR_NUM  FROM VM_DATOS_MONITOREO WHERE ID_PROYECTO = 2148"
+    query2 = "SELECT ID_MUESTREO, ID_CUALIDAD, VARIABLE, UNIDAD, VALOR_NUM  FROM VM_DATOS_MONITOREO WHERE ID_PROYECTO = 2148 AND ID_MUESTREO = 3226201409230752011 AND VARIABLE != 'Botella'"
     query2Result = connection2.execute(query2)
     datos2 = query2Result.fetchall()
     datos2Df = pd.DataFrame(datos2)
@@ -43,10 +51,30 @@ with monitoreo.connect() as connection2:
     
     for _, df_muestra in datos2Df.groupby('ID_MUESTRA'):
     
-        muestra = [df_muestra['VARIABLE'].values[0], 859, df_muestra['UNIDAD'].values[0], df_muestra['ID_MUESTRA'].values[0], "", df_muestra['VALOR_NUM'].astype(float).values[0]]
-        dfMuestrasVariables = dfMuestrasVariables.append(muestra)
+        muestra = {'ID_PARAMETRO': df_muestra['VARIABLE'].values[0], 'ID_METODOLOGIA': 859, 'ID_UNIDAD_MEDIDA': df_muestra['UNIDAD'].values[0], 'ID_MUESTRA': df_muestra['ID_MUESTRA'].values[0],'ID_METODO': "",'VALOR': df_muestra['VALOR_NUM'].astype(float).values[0]}
+        dfMuestrasVariables = dfMuestrasVariables.append(muestra, ignore_index=True)
+
+    dfMuestrasVariables.loc[dfMuestrasVariables['ID_PARAMETRO'] == "Presión", 'ID_PARAMETRO'] = 'Presión columna de agua'
+    dfMuestrasVariables.loc[dfMuestrasVariables['ID_PARAMETRO'] == "Salinidad", 'ID_UNIDAD_MEDIDA'] = 'PSU'
+    dfMuestrasVariables.loc[dfMuestrasVariables['ID_PARAMETRO'] == "Conductividad", 'ID_UNIDAD_MEDIDA'] = 'mS/cm'
     
-    print(dfMuestrasVariables['ID_PARAMETRO'].unique)
+    for parametro in dfMuestrasVariables['ID_PARAMETRO'].unique().tolist():
+    
+        parametroID = parametrosDf[parametrosDf['NOMBRE'] == parametro]['ID_PARAMETRO'].values[0]
+        metodoID = metodosDf[metodosDf['PARAMETRO'] == parametro]['ID_METODO'].values[0]
+        dfMuestrasVariables.loc[dfMuestrasVariables['ID_PARAMETRO'] == parametro, 'ID_METODO'] = metodoID
+        dfMuestrasVariables.loc[dfMuestrasVariables['ID_PARAMETRO'] == parametro, 'ID_PARAMETRO'] = parametroID
+
+    for unidad in dfMuestrasVariables['ID_UNIDAD_MEDIDA'].unique().tolist():
+    
+        unidadID = unidadesDf[unidadesDf['DETALLE'] == unidad]['ID_UNIDAD_MEDIDA'].values[0]
+        dfMuestrasVariables.loc[dfMuestrasVariables['ID_UNIDAD_MEDIDA'] == unidad, 'ID_UNIDAD_MEDIDA'] = unidadID   
+
+    print(dfMuestrasVariables)  
+    
+    
+    
+    # print(dfMuestrasVariables['ID_PARAMETRO'].unique)
     # print(datos2Df['ID_MUESTRA'])
     # agd_muestras = pd.DataFrame(columns = ['ID_MUESTRA','ID_MUESTREO','NOTAS','ES_REPLICA'])
     # muestras = list()

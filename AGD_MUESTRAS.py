@@ -37,14 +37,14 @@ with monitoreo.connect() as connection2:
         
         muestras.append(insertMuestra)
     muestras = pd.DataFrame(data=muestras, columns = ['SQL'])                  
-    # print(muestras)
+    print(muestras)
 
     # print(pd.DataFrame(datos2Df['ID_MUESTRA']))
     # pd.DataFrame(datos2Df['ID_MUESTRA']).to_csv('muestras.csv', index=False)
     # muestras.to_csv('muestras.csv', index=False)
 
-with engine.connect() as connection:
+# with engine.connect() as connection:
 
-    for index, row in muestras.iterrows():
-        connection.execute(row['SQL'])
+#     for index, row in muestras.iterrows():
+#         connection.execute(row['SQL'])
         # print(row['SQL'])
