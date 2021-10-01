@@ -18,7 +18,8 @@ Base = declarative_base
 
 with monitoreo.connect() as connection2:
 
-    query2 = "SELECT ID_MUESTREO, ID_CUALIDAD, VALOR_NUM  FROM VM_DATOS_MONITOREO WHERE ID_PROYECTO = 2148 AND COD_VARIABLE = 'PR' AND ID_MUESTREO = 3226201409230752011"
+    query2 = """SELECT ID_MUESTREO, ID_CUALIDAD, VALOR_NUM  FROM VM_DATOS_MONITOREO WHERE ID_PROYECTO = 2148 AND COD_VARIABLE = 'OD' 
+    AND ID_MUESTREO IN (3226201410061328301)"""
     query2Result = connection2.execute(query2)
     datos2 = query2Result.fetchall()
     datos2Df = pd.DataFrame(datos2)
@@ -31,20 +32,19 @@ with monitoreo.connect() as connection2:
     # print(datos2Df['ID_MUESTRA'].unique().size)
     for _, df_muestra in datos2Df.groupby('ID_MUESTRA'):
         
-        insertPresion = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR, QUALITY_FLAG, PRESICION)
-                        VALUES({438},{859},{38},{df_muestra['ID_MUESTRA'].values[0]}, {621}, {df_muestra['VALOR_NUM'].values[0]},{2}, {'null'})"""
+        insertOxigeno_disuelto = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR)
+                        VALUES({52},{859},{26},{df_muestra['ID_MUESTRA'].values[0]}, {619}, {df_muestra['VALOR_NUM'].values[0]})"""
         
-        muestras.append(insertPresion)
+        muestras.append(insertOxigeno_disuelto)
         
     muestras = pd.DataFrame(data=muestras, columns = ['SQL'])                  
     print(muestras)
     # print(pd.DataFrame(datos2Df['ID_MUESTRA']))
     # pd.DataFrame(datos2Df['ID_MUESTRA']).to_csv('muestras.csv', index=False)
-    muestras.to_csv('muestras_variables_presion.csv', index=False)
+    # muestras.to_csv('muestras_variables_OD.csv', index=False)
 
+with engine.connect() as connection:
 
-# with engine.connect() as connection:
-
-    # for index, row in inserts.iterrows():
-    #     connection.execute(row['SQL'])
-    
+    for index, row in muestras.iterrows():
+        connection.execute(row['SQL'])
+    print('MUESTRAS AGREGADAS')
