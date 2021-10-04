@@ -18,8 +18,10 @@ Base = declarative_base
 
 with monitoreo.connect() as connection2:
 
-    query2 = """SELECT ID_MUESTREO, ID_CUALIDAD, VALOR_NUM  FROM VM_DATOS_MONITOREO WHERE ID_PROYECTO = 2148 AND COD_VARIABLE = 'TEM'
-    AND ID_MUESTREO IN (3226201410061328301)"""
+    query2 = """SELECT *
+                FROM BMUESTREOS
+                JOIN BMUESTRAS_VARIABLES ON BMUESTREOS.ID_MUESTREO=BMUESTRAS_VARIABLES.ID_MUESTREO
+                WHERE BMUESTREOS.ID_PROYECTO = 2002;"""
     query2Result = connection2.execute(query2)
     datos2 = query2Result.fetchall()
     datos2Df = pd.DataFrame(datos2)
@@ -41,10 +43,10 @@ with monitoreo.connect() as connection2:
     print(muestras)
     # print(pd.DataFrame(datos2Df['ID_MUESTRA']))
     # pd.DataFrame(datos2Df['ID_MUESTRA']).to_csv('muestras.csv', index=False)
-    # muestras.to_csv('muestras_variables_temp.csv', index=False)
+    muestras.to_csv('muestras_variables_temp.csv', index=False)
 
-with engine.connect() as connection:
+# with engine.connect() as connection:
 
-    for index, row in muestras.iterrows():
-        connection.execute(row['SQL'])
-    print('Muestras agregadas')
+#     for index, row in muestras.iterrows():
+#         connection.execute(row['SQL'])
+#     print('Muestras agregadas')
