@@ -22,7 +22,7 @@ with monitoreo.connect() as connection2:
     
     query = """ SELECT ID_MUESTREO, ID_PROYECTO
                 FROM VM_DATOS_MONITOREO
-                WHERE ID_PROYECTO = 2427 AND ID_TEMATICA = 71 """
+                WHERE ID_PROYECTO = 1480 AND METODO_ANALITICO = 'Hobos' """
 
     queryResult = connection2.execute(query)
     datos = queryResult.fetchall()
