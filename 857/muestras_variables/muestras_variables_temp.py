@@ -18,35 +18,38 @@ monitoreo = create_engine(SQL_ALCHEMY_MONITOREO_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base
 
-with engine.connect() as connection2:
+with monitoreo.connect() as connection2:
 
-    query2 = """SELECT ID_MUESTREO, ID_ESTACION, ID_PROYECTO, FECHA, NOTAS_GENERALES
-                FROM VM_AGM_2507_816 
-                WHERE VARIABLE IN ('140','141','142','143','483','484','482') and PROYECTO is NULL AND FECHA_HORA LIKE ('%/2018%')"""
-
+    query2 = """SELECT ID_MUESTREO, ID_CUALIDAD, VALOR_NUM FROM VM_DATOS_MONITOREO WHERE ID_PROYECTO = 2427 
+                AND COD_VARIABLE='TEM' 
+                AND ID_MUESTREO IN(2427201612210000001,2427201612210000002)"""
+                
     query2Result = connection2.execute(query2)
     datos2 = query2Result.fetchall()
     datos2Df = pd.DataFrame(datos2)
-    datos2Df.columns = [colName.upper() for colName in query2Result.keys()] 
+    datos2Df.columns = [colName.upper() for colName in query2Result.keys()]                                                                                                                                          
+    datos2Df['COMPLEMENTO'] = datos2Df['ID_CUALIDAD'].apply(lambda x: x.strip().replace(" ","")[4:12])
+    ##str.extract(r'((?=\s).*)', expand = False).
+    datos2Df['ID_MUESTRA'] = datos2Df['ID_MUESTREO'].astype('str') + datos2Df['COMPLEMENTO'].astype('str')
     # print(datos2Df['ID_MUESTRA'])
     # agd_muestras = pd.DataFrame(columns = ['ID_MUESTRA','ID_MUESTREO','NOTAS','ES_REPLICA'])
     muestras = list()
     # print(datos2Df['ID_MUESTRA'].unique().size)
-    for _, df_muestra in datos2Df.groupby('ID_MUESTREO'):
+    for _, df_muestra in datos2Df.groupby('ID_MUESTRA'):
         
-        insertAutor = f"""INSERT INTO AGD_AUTORIAS (ID_FUNCIONARIO, ID_TAREA, ORDEN, FECHA, ID_MUESTRA, ENTIDAD) 
-        VALUES({4547},{5},{1},TO_DATE('{str(df_muestra['FECHA'].values[0]).replace('T',' ').split('.')[0]}', 'YYYY-MM-DD HH24:MI:SS'),{str(803)+str(df_muestra['ID_MUESTREO'].values[0])}, '{'INVEMAR'}')"""
+        insertTemperatura = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR)
+                        VALUES({151},{857},{5},{df_muestra['ID_MUESTRA'].values[0]}, {624}, {df_muestra['VALOR_NUM'].values[0]})"""
         
-        muestras.append(insertAutor)
-        
+        muestras.append(insertTemperatura)
+    
     muestras = pd.DataFrame(data=muestras, columns = ['SQL'])                  
     print(muestras)
     # print(pd.DataFrame(datos2Df['ID_MUESTRA']))
     # pd.DataFrame(datos2Df['ID_MUESTRA']).to_csv('muestras.csv', index=False)
-    muestras.to_csv('muestras_variables_autores.csv', index=False)
+    muestras.to_csv('muestras_variables_temp.csv', index=False)
 
 with engine.connect() as connection:
 
     for index, row in muestras.iterrows():
         connection.execute(row['SQL'])
-    print('MUESTRAS AGREGADAS')
+    print('Muestras agregadas')

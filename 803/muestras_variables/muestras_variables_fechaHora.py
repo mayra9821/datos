@@ -62,10 +62,7 @@ with engine.connect() as connection2:
                     END) AS FECHA_ARREGLADA
                     FROM
                     vm_agm_2507_816
-                    WHERE
-                    variable IN ( '140', '141', '142', '143', '483','484', '482' )
-                    AND id_muestreo IN ( 81620180122093517,81620180411132118,81620180412080901,
-                81620180801085348,81620180801090635,81620181207140903,81620190319153515,81620190529000000,81620190816140655 )"""
+                    WHERE VARIABLE IS NULL AND ID_MUESTREO IN (81620180723105032) AND UNIDADES IN (45,66,67,43) AND FECHA_HORA LIKE ('%/2018%')"""
 
 
     query2Result = connection2.execute(query2)

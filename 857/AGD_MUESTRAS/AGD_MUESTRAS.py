@@ -6,8 +6,8 @@ from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import session, sessionmaker
 from sqlalchemy.sql.expression import select,insert
-
 cx_Oracle.init_oracle_client(lib_dir=r"C:\oracle\instantclient_11_2")
+
 
 SQL_ALCHEMY_DATABASE_URL = 'oracle://DATOSDECAMPO:paseos@192.168.3.70:1521/sci'
 SQL_ALCHEMY_MONITOREO_URL = 'oracle://MONITOREOM:mon2007@192.168.3.70:1521/sci'
@@ -18,35 +18,36 @@ monitoreo = create_engine(SQL_ALCHEMY_MONITOREO_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base
 
-with engine.connect() as connection2:
-
-    query2 = """SELECT ID_MUESTREO, ID_ESTACION, ID_PROYECTO, FECHA
-                FROM VM_AGM_2507_816 
-                WHERE VARIABLE IN ('151','12','52','56','89','826') and PROYECTO is NULL AND FECHA_HORA LIKE ('%/2018%')"""
+with monitoreo.connect() as connection2:
+    query2 = """SELECT ID_MUESTREO, ID_CUALIDAD, REPLICA FROM VM_DATOS_MONITOREO WHERE ID_PROYECTO = 2427
+                AND ID_MUESTREO IN(2427201612210000001,2427201612210000002)"""
 
     query2Result = connection2.execute(query2)
     datos2 = query2Result.fetchall()
     datos2Df = pd.DataFrame(datos2)
-    datos2Df.columns = [colName.upper() for colName in query2Result.keys()]    
-    # print(datos2Df['ID_MUESTRA'])
-    # agd_muestras = pd.DataFrame(columns = ['ID_MUESTRA','ID_MUESTREO','NOTAS','ES_REPLICA'])
+    datos2Df.columns = [colName.upper() for colName in query2Result.keys()]                                                                                                                                          
+    datos2Df['COMPLEMENTO'] = datos2Df['ID_CUALIDAD'].apply(lambda x: x.strip().replace(" ","")[4:12])
+    ##.str.extract(r'((?=\s).*)', expand = False)
+    datos2Df['ID_MUESTRA'] = datos2Df['ID_MUESTREO'].astype('str') + datos2Df['COMPLEMENTO'].astype('str')
     muestras = list()
+    print(datos2Df['ID_MUESTRA'])
+    # agd_muestras = pd.DataFrame(columns = ['ID_MUESTRA','ID_MUESTREO','NOTAS','ES_REPLICA'])
     # print(datos2Df['ID_MUESTRA'].unique().size)
-    for _, df_muestra in datos2Df.groupby('ID_MUESTREO'): #TODO: subir los datos en null de la vista con la met 816
+    for _, df_muestra in datos2Df.groupby('ID_MUESTRA'):
         
-        insertMuestreo = f"""INSERT INTO AGD_MUESTREOS (ID_MUESTREO, ID_ESTACION, ID_PROYECTO, ID_METODOLOGIA, ID_TEMATICAS, FECHA)
-                        VALUES({str(858)+str(df_muestra['ID_MUESTREO'].values[0])},{df_muestra['ID_ESTACION'].values[0]}, {2507}, {858}, {217}, TO_DATE('{str(df_muestra['FECHA'].values[0]).replace('T',' ').split('.')[0]}','YYYY-MM-DD HH24:MI:SS'))"""
+        insertMuestra = f"""INSERT INTO AGD_MUESTRAS (ID_MUESTRA, ID_MUESTREO,  ES_REPLICA)
+                        VALUES({df_muestra['ID_MUESTRA'].values[0]},{str(857)+str(df_muestra['ID_MUESTREO'].values[0])},{df_muestra['REPLICA'].values[0]})"""
         
-        muestras.append(insertMuestreo)
-
+        muestras.append(insertMuestra)
     muestras = pd.DataFrame(data=muestras, columns = ['SQL'])                  
     print(muestras)
+
     # print(pd.DataFrame(datos2Df['ID_MUESTRA']))
     # pd.DataFrame(datos2Df['ID_MUESTRA']).to_csv('muestras.csv', index=False)
-    muestras.to_csv('AGD_MUESTREOS.csv', index=False)
+    muestras.to_csv('AGD_muestras.csv', index=False)
 
 # with engine.connect() as connection:
 
 #     for index, row in muestras.iterrows():
 #         connection.execute(row['SQL'])
-#     print('MUESTREOS AGREGADOS')
+#     print('MUESTRAS AGREGADAS')

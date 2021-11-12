@@ -34,8 +34,8 @@ with engine.connect() as connection2:
                     || replace(replace(replace(fecha_hora || ' 00:00', ':'), '/'), ' ')
                 END AS ID_MUESTRA, VALOR
                 FROM VM_AGM_2507_816
-                WHERE VARIABLE IN ('482') AND ID_MUESTREO IN (81620180122093517,81620180411132118,81620180412080901,
-                81620180801085348,81620180801090635,81620181207140903,81620190319153515,81620190529000000,81620190816140655) """
+                WHERE VARIABLE IS NULL AND ID_MUESTREO IN (81620180723105032) AND UNIDADES IN (45) AND FECHA_HORA LIKE ('%/2018%')
+ """
 
     query2Result = connection2.execute(query2)
     datos2 = query2Result.fetchall()
@@ -60,8 +60,8 @@ with engine.connect() as connection2:
     # pd.DataFrame(datos2Df['ID_MUESTRA']).to_csv('muestras.csv', index=False)
     muestras.to_csv('muestras_variables_Pre.csv', index=False)
 
-# with engine.connect() as connection:
+with engine.connect() as connection:
 
-#     for index, row in muestras.iterrows():
-#         connection.execute(row['SQL'])
-#     print('Muestras agregadas')
+    for index, row in muestras.iterrows():
+        connection.execute(row['SQL'])
+    print('Muestras agregadas')

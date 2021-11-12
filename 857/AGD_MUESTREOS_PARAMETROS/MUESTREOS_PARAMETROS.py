@@ -18,11 +18,11 @@ monitoreo = create_engine(SQL_ALCHEMY_MONITOREO_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base
 
-with engine.connect() as connection2:
+with monitoreo.connect() as connection2:
     
-    query = """SELECT ID_MUESTREO
-                FROM VM_AGM_2507_816 
-                WHERE VARIABLE IN ('140','141','142','143','483','484','482')AND PROYECTO is NULL AND FECHA_HORA LIKE ('%/2018%') """
+    query = """ SELECT ID_MUESTREO, ID_PROYECTO
+                FROM VM_DATOS_MONITOREO
+                WHERE ID_PROYECTO = 2427 AND ID_TEMATICA = 71 """
 
     queryResult = connection2.execute(query)
     datos = queryResult.fetchall()
@@ -35,12 +35,12 @@ with engine.connect() as connection2:
     for _, df_muestreo in datosDf.groupby(['ID_MUESTREO']):
         
         insertEntidad = f"""INSERT INTO AGD_MUESTREOS_PARAMETROS (ID_MUESTREO,ID_PARAMETRO,ID_METODOLOGIA,ID_UNIDAD_MEDIDA,VALOR)   
-        VALUES ({str(803)+str(df_muestreo['ID_MUESTREO'].values[0])},{828},{803},{100},'{'BPIN INVEMAR 2018'}')"""
+        VALUES ({str(857)+str(df_muestreo['ID_MUESTREO'].values[0])}, {828}, {857}, {100}, '{'INVEMAR'}')"""
         
         insertProyecto = f"""INSERT INTO AGD_MUESTREOS_PARAMETROS (ID_MUESTREO,ID_PARAMETRO,ID_METODOLOGIA,ID_UNIDAD_MEDIDA,VALOR) 
-        VALUES ({str(803)+str(df_muestreo['ID_MUESTREO'].values[0])},{127},{803},{100},{3459})"""
+        VALUES ({str(857)+str(df_muestreo['ID_MUESTREO'].values[0])},{127},{857},{100},'{df_muestreo['ID_PROYECTO'].values[0]}')"""
         
-        
+
         inserts.append(insertEntidad)
         inserts.append(insertProyecto)
     
@@ -48,6 +48,7 @@ with engine.connect() as connection2:
     inserts = pd.DataFrame(data=inserts, columns = ['SQL'])
     print(inserts)
     inserts.to_csv('muestreos_parametros.csv', index=False)
+    
 
 # with engine.connect() as connection:
 

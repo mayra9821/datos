@@ -23,6 +23,7 @@ with engine.connect() as connection2:
     query2 = """SELECT ID_MUESTREO, ID_ESTACION, ID_PROYECTO, FECHA, NOTAS_GENERALES
                 FROM VM_AGM_2507_816 
                 WHERE VARIABLE IN ('140','141','142','143','483','484','482') and PROYECTO is NULL AND FECHA_HORA LIKE ('%/2018%')"""
+
     query2Result = connection2.execute(query2)
     datos2 = query2Result.fetchall()
     datos2Df = pd.DataFrame(datos2)
@@ -44,11 +45,11 @@ with engine.connect() as connection2:
     # pd.DataFrame(datos2Df['ID_MUESTRA']).to_csv('muestras.csv', index=False)
     muestras.to_csv('AGD_MUESTREOS.csv', index=False)
 
-# with engine.connect() as connection:
+with engine.connect() as connection:
 
-#     for index, row in muestras.iterrows():
-#         connection.execute(row['SQL'])
-#     print('MUESTREOS AGREGADOS')
+    for index, row in muestras.iterrows():
+        connection.execute(row['SQL'])
+    print('MUESTREOS AGREGADOS')
 
 
 
