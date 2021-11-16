@@ -22,14 +22,14 @@ with monitoreo.connect() as connection2:
 
     query2 = """SELECT ID_MUESTREO, ID_CUALIDAD,to_number(substr(to_char((to_number(to_char(to_date(substr(id_cualidad, 1, 8), 'YYYYMMDD'), 'J')) - 2415019 ) + to_number(substr(id_cualidad, 10, 2)) / 24 +
                 to_number(substr(id_cualidad, 12, 2)) / ( 60 * 24 ) + to_number(substr(id_cualidad, 14, 5)) / ( 3600 * 24 )),1,21)) AS FECHA
-                FROM VM_DATOS_MONITOREO WHERE ID_MUESTREO IN(2427201612210000001,2427201612210000002)"""
+                FROM VM_DATOS_MONITOREO WHERE ID_MUESTREO IN(447,460,462,454,472,450,466,465,463,457,448,459,475,461,467,471,468,451,455,453,452,469,456,464,470,449)"""
 
 
     query2Result = connection2.execute(query2)
     datos2 = query2Result.fetchall()
     datos2Df = pd.DataFrame(datos2)
     datos2Df.columns = [colName.upper() for colName in query2Result.keys()]                                                                                                                                          
-    datos2Df['COMPLEMENTO'] = datos2Df['ID_CUALIDAD'].apply(lambda x: x.strip().replace(" ","")[4:12])
+    datos2Df['COMPLEMENTO'] = datos2Df['ID_CUALIDAD'].apply(lambda x: x.strip().replace(" ","").replace("/","").replace(":","").replace("null","")[0:])
     ##str.extract(r'((?=\s).*)', expand = False).
     datos2Df['ID_MUESTRA'] = datos2Df['ID_MUESTREO'].astype('str') + datos2Df['COMPLEMENTO'].astype('str')
     # print(datos2Df['ID_MUESTRA'])
