@@ -35,7 +35,7 @@ with administrador.connect() as connection2:
     for _, df_muestra in datos2Df.groupby('CODIGO_SALIDA'):
         
         insertMuestreo = f"""INSERT INTO AGD_MUESTREOS (ID_MUESTREO, ID_ESTACION, ID_PROYECTO, ID_METODOLOGIA, ID_TEMATICAS, FECHA)
-                        VALUES({str(857)+str(df_muestra['CODIGO_SALIDA'].values[0])},{14297}, {3492}, {857}, {213}, TO_DATE('{str(df_muestra['FECHA_MUESTREO'].values[0]).replace('T',' ').split('.')[0]}','YYYY-MM-DD HH24:MI:SS'))"""
+                        VALUES({str(857)+str(df_muestra['CODIGO_SALIDA'].values[0])},{14297}, {3492}, {857}, {217}, TO_DATE('{str(df_muestra['FECHA_MUESTREO'].values[0]).replace('T',' ').split('.')[0]}','YYYY-MM-DD HH24:MI:SS'))"""
         
         muestreos.append(insertMuestreo)
 
