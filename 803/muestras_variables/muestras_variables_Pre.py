@@ -21,21 +21,22 @@ Base = declarative_base
 with engine.connect() as connection2:
 
     query2 = """SELECT CASE
-                WHEN substr(fecha_hora, 21, 1) = 'p' THEN
+                WHEN substr(FECHA_HORA_REGISTRO, 21, 1) = 'p' THEN
                     id_muestreo
-                    || replace(replace(replace(substr(fecha_hora, 1, 11)
-                                            ||(to_number(substr(fecha_hora, 12, 2)) + 12)
-                                            || substr(fecha_hora, 14, 3), ':'), '/'), ' ')
-                WHEN substr(fecha_hora, 21, 1) = 'a' THEN
+                    || replace(replace(replace(substr(FECHA_HORA_REGISTRO, 1, 11)
+                                            ||(to_number(substr(FECHA_HORA_REGISTRO, 12, 2)) + 12)
+                                            || substr(FECHA_HORA_REGISTRO, 14, 3), ':'), '/'), ' ')
+                WHEN substr(FECHA_HORA_REGISTRO, 21, 1) = 'a' THEN
                     id_muestreo
-                    || replace(replace(replace(substr(fecha_hora, 1, 16), ':'), '/'), ' ')
+                    || replace(replace(replace(substr(FECHA_HORA_REGISTRO, 1, 16), ':'), '/'), ' ')
                 ELSE
                     id_muestreo
-                    || replace(replace(replace(fecha_hora || ' 00:00', ':'), '/'), ' ')
+                    || replace(replace(replace(FECHA_HORA_REGISTRO || ' 00:00', ':'), '/'), ' ')
                 END AS ID_MUESTRA, VALOR
                 FROM VM_AGM_2507_816
-                WHERE VARIABLE IS NULL AND ID_MUESTREO IN (81620180723105032) AND UNIDADES IN (45) AND FECHA_HORA LIKE ('%/2018%')
- """
+                WHERE ID_MUESTREO IN (81620180118151515,81620180119151148,81620180122132412,81620180122160828,
+                81620180411161602,81620180914081944,81620181130080509,81620181228134507,81620190514144057,81620190813084908) AND UNIDADES IN (45) 
+            """
 
     query2Result = connection2.execute(query2)
     datos2 = query2Result.fetchall()
@@ -60,8 +61,8 @@ with engine.connect() as connection2:
     # pd.DataFrame(datos2Df['ID_MUESTRA']).to_csv('muestras.csv', index=False)
     muestras.to_csv('muestras_variables_Pre.csv', index=False)
 
-with engine.connect() as connection:
+# with engine.connect() as connection:
 
-    for index, row in muestras.iterrows():
-        connection.execute(row['SQL'])
-    print('Muestras agregadas')
+#     for index, row in muestras.iterrows():
+#         connection.execute(row['SQL'])
+#     print('Muestras agregadas')

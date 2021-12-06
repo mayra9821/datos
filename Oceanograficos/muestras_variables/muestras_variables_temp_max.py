@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import cx_Oracle
+# import cx_Oracle
 from sqlalchemy import create_engine
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
@@ -25,7 +25,7 @@ Base = declarative_base
 with administrador.connect() as connection2:
     query2 = """SELECT
                 CODIGO_SALIDA,
-                TO_CHAR(fecha_muestreo,'YYYYMMDD HH24MISS') AS ID_CUALIDAD,     
+                TO_CHAR(fecha_muestreo,'YYYYMMDD HH24MISS') AS ID_CUALIDAD, TEMP_MAXIMA  
                 FROM
                   MAMBIENTAL_METEREOLOGICO
                 WHERE
@@ -36,28 +36,29 @@ with administrador.connect() as connection2:
     datos2 = query2Result.fetchall()
     datos2Df = pd.DataFrame(datos2)
     datos2Df.columns = [colName.upper() for colName in query2Result.keys()]                                                                                                                                          
-    datos2Df['COMPLEMENTO'] = datos2Df['ID_CUALIDAD'].apply(lambda x: x.strip().replace(" ","")[4:12])
-    ##.str.extract(r'((?=\s).*)', expand = False).
-    datos2Df['ID_MUESTRA'] = datos2Df['ID_MUESTREO'].astype('str') + datos2Df['COMPLEMENTO'].astype('str')
-    # print(datos2Df['ID_MUESTRA'])
-    # agd_muestras = pd.DataFrame(columns = ['ID_MUESTRA','ID_MUESTREO','NOTAS','ES_REPLICA'])
+    datos2Df['COMPLEMENTO'] = datos2Df['ID_CUALIDAD'].apply(lambda x: x.strip().replace(" ","")[4:])
+    ##.str.extract(r'((?=\s).*)', expand = False)
+    datos2Df['ID_MUESTRA'] = datos2Df['CODIGO_SALIDA'].astype('str') + datos2Df['COMPLEMENTO'].astype('str')
     muestras = list()
+    ##print(datos2Df['ID_MUESTRA'])
+    # agd_muestras = pd.DataFrame(columns = ['ID_MUESTRA','ID_MUESTREO','NOTAS','ES_REPLICA'])
     # print(datos2Df['ID_MUESTRA'].unique().size)
     for _, df_muestra in datos2Df.groupby('ID_MUESTRA'):
         
-        insertSalinidad = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR)
-                        VALUES({89},{857},{103},{df_muestra['ID_MUESTRA'].values[0]}, {624}, {df_muestra['VALOR_NUM'].values[0]})"""
+        insertTemperatura = f"""INSERT INTO AGD_MUESTRAS_VARIABLES (ID_PARAMETRO, ID_METODOLOGIA, ID_UNIDAD_MEDIDA, ID_MUESTRA, ID_METODO, VALOR)
+                        VALUES({485},{857},{5},{df_muestra['ID_MUESTRA'].values[0]}, {624}, {df_muestra['TEMP_MAXIMA'].values[0]})"""
         
-        muestras.append(insertSalinidad)
+        muestras.append(insertTemperatura)
         
     muestras = pd.DataFrame(data=muestras, columns = ['SQL'])                  
     print(muestras)
+
     # print(pd.DataFrame(datos2Df['ID_MUESTRA']))
     # pd.DataFrame(datos2Df['ID_MUESTRA']).to_csv('muestras.csv', index=False)
-    muestras.to_csv('muestras_variables_salinidad.csv', index=False)
+    muestras.to_csv('muestras_variables_temp.csv', index=False)
 
 # with engine.connect() as connection:
 
 #     for index, row in muestras.iterrows():
 #         connection.execute(row['SQL'])
-#     print("muestras agregadas")
+#     print('MUESTRAS AGREGADAS')

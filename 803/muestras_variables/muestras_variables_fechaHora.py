@@ -94,3 +94,4 @@ with engine.connect() as connection2:
 #     for index, row in muestras.iterrows():
 #         connection.execute(row['SQL'])
 #     print('MUESTRAS AGREGADAS')    
+

@@ -20,22 +20,22 @@ Base = declarative_base
 
 with engine.connect() as connection2:
     query2 = """SELECT CASE
-                WHEN substr(fecha_hora, 21, 1) = 'p' THEN
+                WHEN substr(FECHA_HORA_REGISTRO, 21, 1) = 'p' THEN
                     id_muestreo
-                    || replace(replace(replace(substr(fecha_hora, 1, 11)
-                                            ||(to_number(substr(fecha_hora, 12, 2)) + 12)
-                                            || substr(fecha_hora, 14, 3), ':'), '/'), ' ')
-                WHEN substr(fecha_hora, 21, 1) = 'a' THEN
+                    || replace(replace(replace(substr(FECHA_HORA_REGISTRO, 1, 11)
+                                            ||(to_number(substr(FECHA_HORA_REGISTRO, 12, 2)) + 12)
+                                            || substr(FECHA_HORA_REGISTRO, 14, 3), ':'), '/'), ' ')
+                WHEN substr(FECHA_HORA_REGISTRO, 21, 1) = 'a' THEN
                     id_muestreo
-                    || replace(replace(replace(substr(fecha_hora, 1, 16), ':'), '/'), ' ')
+                    || replace(replace(replace(substr(FECHA_HORA_REGISTRO, 1, 16), ':'), '/'), ' ')
                 ELSE
                     id_muestreo
-                    || replace(replace(replace(fecha_hora || ' 00:00', ':'), '/'), ' ')
+                    || replace(replace(replace(FECHA_HORA_REGISTRO || ' 00:00', ':'), '/'), ' ')
                 END AS ID_MUESTRA, 
                 ES_REPLICA, 
                 ID_MUESTREO
                 FROM VM_AGM_2507_816
-                WHERE VARIABLE IS NULL AND ID_MUESTREO IN (81620180119155650) AND UNIDADES IN (45,66,67,43,5,4) AND FECHA_HORA LIKE ('%/2017%')
+                WHERE ID_MUESTREO IN (81620180118151515) 
                 """
 
     query2Result = connection2.execute(query2)
@@ -51,7 +51,7 @@ with engine.connect() as connection2:
     for _, df_muestra in datos2Df.groupby('ID_MUESTRA'):
 
         insertMuestra = f"""INSERT INTO AGD_MUESTRAS (ID_MUESTRA, ID_MUESTREO,  ES_REPLICA)
-                        VALUES({df_muestra['ID_MUESTRA'].values[0]},{str(803)+str(df_muestra['ID_MUESTREO'].values[0])},{df_muestra['ES_REPLICA'].values[0]})"""
+                        VALUES({df_muestra['ID_MUESTRA'].values[0]},{str(2069)+str(df_muestra['ID_MUESTREO'].values[0])},{df_muestra['ES_REPLICA'].values[0]})"""
 
         muestras.append(insertMuestra)
     muestras = pd.DataFrame(data=muestras, columns=['SQL'])

@@ -25,7 +25,7 @@ Base = declarative_base
 with administrador.connect() as connection2:
 
     query2 = """SELECT CODIGO_SALIDA, FECHA_MUESTREO  FROM MCODIGOS_SALIDAS 
-                WHERE GRUPO = 'TH'"""
+                WHERE GRUPO = 'TM'"""
 
     query2Result = connection2.execute(query2)
     datos2 = query2Result.fetchall()
@@ -57,3 +57,5 @@ with administrador.connect() as connection2:
 #     for index, row in muestras.iterrows():
 #         connection.execute(row['SQL'])
 #     print('MUESTRAS AGREGADAS')
+
+
