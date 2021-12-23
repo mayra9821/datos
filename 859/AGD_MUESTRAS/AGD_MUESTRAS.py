@@ -1,10 +1,12 @@
 import pandas as pd
+import cx_Oracle
 import numpy as np
 from sqlalchemy import create_engine
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import session, sessionmaker
 from sqlalchemy.sql.expression import select,insert
+cx_Oracle.init_oracle_client(lib_dir=r"C:\oracle\instantclient_11_2")
 
 
 SQL_ALCHEMY_DATABASE_URL = 'oracle://DATOSDECAMPO:paseos@192.168.3.70:1521/sci'
@@ -17,16 +19,14 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base
 
 with monitoreo.connect() as connection2:
-    query2 = """SELECT ID_MUESTREO, ID_CUALIDAD, REPLICA FROM VM_DATOS_MONITOREO WHERE ID_PROYECTO = 3023 
-                AND VARIABLE IN ('Temperatura del agua','Oxigeno Disuelto','Presión','Porcentaje de Saturación de Oxígeno','Conductividad','pH','Salinidad','Clorofila a') 
-                AND ID_MUESTREO IN (1932201601140931371,1932201601140931372,1932201601140931373,1932201601140931374,1932201601141025061,1932201601141025062,
-                1932201601141025063,1932201601141120581,1932201601141120582,1932201601141120583)"""
+    query2 = """SELECT ID_MUESTREO, ID_CUALIDAD, REPLICA FROM VM_DATOS_MONITOREO WHERE VARIABLE IN ('Temperatura del agua','Oxigeno Disuelto','Presión','Porcentaje de Saturación de Oxígeno','Conductividad','pH','Salinidad','Clorofila a') 
+                AND ID_MUESTREO IN (3010201612210000008,3010201612210000009)"""
 
     query2Result = connection2.execute(query2)
     datos2 = query2Result.fetchall()
     datos2Df = pd.DataFrame(datos2)
     datos2Df.columns = [colName.upper() for colName in query2Result.keys()]                                                                                                                                          
-    datos2Df['COMPLEMENTO'] = datos2Df['ID_CUALIDAD'].str.extract(r'((?=\s).*)', expand = False).apply(lambda x: x.strip().replace(",","")[2:])
+    datos2Df['COMPLEMENTO'] = datos2Df['ID_CUALIDAD'].str.extract(r'((?=\s).*)', expand = False).apply(lambda x: x.strip().replace(".","")[2:])
     datos2Df['ID_MUESTRA'] = datos2Df['ID_MUESTREO'].astype('str') + datos2Df['COMPLEMENTO'].astype('str')
     muestras = list()
     # print(datos2Df['ID_MUESTRA'])
@@ -45,8 +45,8 @@ with monitoreo.connect() as connection2:
     # pd.DataFrame(datos2Df['ID_MUESTRA']).to_csv('muestras.csv', index=False)
     muestras.to_csv('AGD_muestras.csv', index=False)
 
-with engine.connect() as connection:
+# with engine.connect() as connection:
 
-    for index, row in muestras.iterrows():
-        connection.execute(row['SQL'])
-    print('MUESTRAS AGREGADAS')
+#     for index, row in muestras.iterrows():
+#         connection.execute(row['SQL'])
+#     print('MUESTRAS AGREGADAS')

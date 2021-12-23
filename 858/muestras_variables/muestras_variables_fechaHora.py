@@ -84,8 +84,8 @@ with engine.connect() as connection2:
     # pd.DataFrame(datos2Df['ID_MUESTRA']).to_csv('muestras.csv', index=False)
     muestras.to_csv('muestras_variables_fechaHora.csv', index=False)
 
-with engine.connect() as connection:
+# with engine.connect() as connection:
 
-    for index, row in muestras.iterrows():
-        connection.execute(row['SQL'])
-    print('MUESTRAS AGREGADAS')    
+#     for index, row in muestras.iterrows():
+#         connection.execute(row['SQL'])
+#     print('MUESTRAS AGREGADAS')    
